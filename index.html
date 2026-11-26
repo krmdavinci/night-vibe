@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NIGHT VIBE | What is happening in your city tonight</title>
+<meta name="description" content="Night Vibe finds clubs, bars, cinemas, theatres, museums, bowling, billiards, karaoke, parks, sports and more near you or in any city. Retro neon city-fun finder.">
+<meta name="theme-color" content="#12002b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2312002b'/%3E%3Ccircle cx='50' cy='46' r='28' fill='%23ff2e93'/%3E%3Crect y='58' x='20' width='60' height='6' fill='%2312002b'/%3E%3Crect y='70' x='20' width='60' height='8' fill='%2312002b'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Monoton&family=Press+Start+2P&family=Righteous&family=Cairo:wght@600;800&family=Space+Mono:wght@400;700&family=Russo+One&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lib/leaflet.css">
+<link rel="stylesheet" href="style.css">
+<link rel="canonical" href="https://night-vibe-6cy.pages.dev/">
+<meta name="robots" content="index,follow">
+<meta name="google-site-verification" content="LEfH7Zf8XORvxhG0cV1sAygWd13n7Gguvp6cNPQ4nTc">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Night Vibe">
+<meta property="og:title" content="NIGHT VIBE | What is happening in your city tonight">
+<meta property="og:description" content="Night Vibe finds clubs, bars, cinemas, theatres, museums, bowling, billiards, karaoke, parks, sports and more near you or in any city. Retro neon city-fun finder.">
+<meta property="og:url" content="https://night-vibe-6cy.pages.dev/">
+<meta property="og:image" content="https://night-vibe-6cy.pages.dev/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NIGHT VIBE | What is happening in your city tonight">
+<meta name="twitter:description" content="Night Vibe finds clubs, bars, cinemas, theatres, museums, bowling, billiards, karaoke, parks, sports and more near you or in any city. Retro neon city-fun finder.">
+<meta name="twitter:image" content="https://night-vibe-6cy.pages.dev/og.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Night Vibe","url":"https://night-vibe-6cy.pages.dev/","description":"Night Vibe finds clubs, bars, cinemas, theatres, museums, bowling, billiards, karaoke, parks, sports and more near you or in any city. Retro neon city-fun finder."}</script>
+</head>
+<body>
+<div class="scan"></div>
+
+<!-- ENTER GATE: one tap unlocks sound (browsers block autoplay with audio) -->
+<div id="gate" role="dialog" aria-label="Enter">
+  <div class="gate-sun"></div>
+  <div class="gate-grid"></div>
+  <div class="gate-inner">
+    <div class="logo-big neon" data-t="logo">NIGHT VIBE</div>
+    <p class="gate-sub" data-t="gateSub">Clubs. Cinemas. Museums. Parks. Bowling. Tonight.</p>
+    <button id="enterBtn" class="btn-arcade"><span data-t="enter">PRESS START</span></button>
+    <p class="gate-hint" data-t="gateHint">Tap to enter with sound on</p>
+    <button id="enterMute" class="link-btn" data-t="enterMute">enter without music</button>
+  </div>
+</div>
+
+<header class="top">
+  <a class="brand neon-s" href="#">NIGHT<span>VIBE</span></a>
+  <div class="top-right">
+    <button id="muteBtn" class="chip small" aria-label="Music"><span id="muteIcon">&#9835;</span> <span id="muteTxt" data-t="musicOn">MUSIC ON</span></button>
+    <select id="langSel" class="chip small" aria-label="Language"><option value="en">EN</option><option value="ar">AR</option><option value="tr">TR</option><option value="ru">RU</option></select>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="sun"></div>
+  <div class="floor"></div>
+  <div class="hero-in">
+    <h1 class="neon" data-t="heroTitle">BORED AGAIN?</h1>
+    <p class="lead" data-t="heroLead">Search a city or use your location. We pull real places to go out, watch, play and hang out from OpenStreetMap and put them on the map.</p>
+    <p id="quip" class="quip"></p>
+    <form id="searchForm" class="search">
+      <input id="q" type="search" autocomplete="off" data-ph="searchPh" placeholder="City or area: Istanbul, Cairo, Berlin...">
+      <button class="btn-arcade sm" type="submit"><span data-t="go">GO</span></button>
+    </form>
+    <div class="row-center">
+      <button id="nearBtn" class="chip hot" data-t="near">&#9678; NEAR ME</button>
+      <button id="surpriseBtn" class="chip" data-t="surprise">&#9733; SURPRISE ME</button>
+    </div>
+    <div id="cities" class="cities"></div>
+  </div>
+</section>
+
+<div class="ticker"><div class="ticker-track" id="ticker"></div></div>
+
+<main>
+  <section class="panel controls">
+    <div class="filters" id="typeFilters"></div>
+    <div class="ctl-row">
+      <label class="rng"><span data-t="radius">Radius</span> <b id="radVal">3 km</b>
+        <input id="radius" type="range" min="1" max="10" step="1" value="3"></label>
+      <label class="sel"><span data-t="sort">Sort</span>
+        <select id="sort"><option value="dist" data-t="sDist">Closest</option><option value="name" data-t="sName">A to Z</option><option value="info" data-t="sInfo">Most info</option></select></label>
+      <label class="chk"><input id="openOnly" type="checkbox"> <span data-t="openOnly">Open now (when hours known)</span></label>
+      <input id="nameQ" class="mini" type="search" data-ph="nameQ" placeholder="filter by name">
+    </div>
+  </section>
+
+  <div id="status" class="status" aria-live="polite"></div>
+
+  <section class="split">
+    <div id="map" class="map" aria-label="Map"></div>
+    <div class="listwrap">
+      <div id="list" class="list"></div>
+    </div>
+  </section>
+
+  <section id="plan" class="panel plan">
+    <h2 class="neon-s" data-t="myNight">MY NIGHT</h2>
+    <p class="muted" data-t="myNightSub">Tap the heart on a spot to build your route for tonight. Saved on this device.</p>
+    <ol id="planList"></ol>
+    <div class="row-center">
+      <button id="shareWa" class="chip hot" data-t="shareWa">SEND TO FRIENDS (WhatsApp)</button>
+      <button id="copyPlan" class="chip" data-t="copyPlan">COPY LIST</button>
+      <button id="clearPlan" class="chip" data-t="clearPlan">CLEAR</button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p data-t="foot1">Venue data: &copy; OpenStreetMap contributors (ODbL), loaded live via Overpass API. Community-edited: places can be missing, closed, or have old hours. Always check before you go.</p>
+  <p data-t="foot2">Night Vibe does not list ticketed events or parties yet, only the venues. Drink responsibly. 18+ / local age laws apply.</p>
+</footer>
+
+<div id="detail" class="detail"><div class="dbox"><button id="dClose" class="chip small dclose" aria-label="Close">&#10005;</button><h2 id="dTitle" class="neon-s"></h2><div id="dMeta"></div><div id="dActs" class="acts"></div><div id="dPhotos"></div></div></div>
+<div id="yt"></div>
+<script src="lib/leaflet.js"></script>
+<script src="config.js"></script>
+<script src="strings.js"></script>
+<script src="strings2.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
